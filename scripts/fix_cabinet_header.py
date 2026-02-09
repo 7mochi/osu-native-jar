@@ -1,6 +1,10 @@
 import os
+import sys
 
-filename = "build/generated/cabinet.h"
+if len(sys.argv) > 1:
+    filename = sys.argv[1]
+else:
+    filename = "build/generated/cabinet.h"
 
 if not os.path.exists(filename):
     print(f"Error: {filename} not found. Please run the build script first to generate the header.")

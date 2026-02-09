@@ -50,13 +50,22 @@ jobs:
         run: |
           dotnet publish osu-native/osu.Native -c Release -r ${{ matrix.settings.target }} -o ./publish_out
 
+      - name: Include header in artifact
+        shell: bash
+        run: |
+          HEADER_SRC=$(find osu-native/Artifacts/bin -name "cabinet.h" | grep "${{ matrix.settings.target }}" | head -n 1)
+          if [ -f "$HEADER_SRC" ]; then
+            cp "$HEADER_SRC" ./publish_out/cabinet.h
+          else
+            echo "Warning: cabinet.h not found in Artifacts, searching everywhere..."
+            find . -name "cabinet.h" -exec cp {} ./publish_out/ \;
+          fi
+
       - name: Upload artifact
         uses: actions/upload-artifact@v6
         with:
           name: native-${{ matrix.settings.lib_dir }}
-          path: |
-            ./publish_out/${{ matrix.settings.output }}
-            ./publish_out/cabinet.h
+          path: ./publish_out/
           if-no-files-found: error
 
   release:
@@ -97,10 +106,12 @@ jobs:
             PLATFORM=${dir#build/temp-native/native-}
             mkdir -p "build/generated/resources/native/$PLATFORM"
           
-            for file in $dir/*.{so,dll,dylib}; do
+            for file in "$dir"/*; do
               [ -e "$file" ] || continue
               FILENAME=$(basename "$file")
           
+              [[ "$FILENAME" == *.h || "$FILENAME" == *.dbg || "$FILENAME" == *.pdb || "$FILENAME" == *.dSYM ]] && continue
+              
               if [[ "$FILENAME" == *.so || "$FILENAME" == *.dylib ]] && [[ ! "$FILENAME" == lib* ]]; then
                 cp "$file" "build/generated/resources/native/$PLATFORM/lib$FILENAME"
               else
@@ -109,7 +120,9 @@ jobs:
             done
           done
           
-          cp build/temp-native/native-linux-x86-64/cabinet.h ./cabinet.h
+          HEADER_PATH=$(find build/temp-native -name "cabinet.h" | head -n 1)
+          cp "$HEADER_PATH" ./cabinet.h
+          
           python scripts/fix_cabinet_header.py ./cabinet.h
           jextract -t io.github.nanamochi.osu_native.bindings --output src/main/java ./cabinet.h
 

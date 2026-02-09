@@ -38,7 +38,7 @@ jobs:
         run: pip install --upgrade bump-my-version
 
       - name: Bump version
-        run: bump-my-version ${{ github.event.inputs.version }} --allow-dirty --tag-name "osu-native-jar-v{new_version}"
+        run: bump-my-version bump ${{ github.event.inputs.version }} --allow-dirty --tag-name "osu-native-jar-v{new_version}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

@@ -1,7 +1,7 @@
 import java.util.*
 
 group = "io.github.7mochi"
-version = "0.0.1"
+version = "0.0.2"
 
 plugins {
     kotlin("jvm") version "2.3.10"

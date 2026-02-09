@@ -1,0 +1,10 @@
+[tool.bumpversion]
+current_version = "0.0.0"
+commit = true
+tag = true
+message = "chore: publish library to maven repository"
+
+[[tool.bumpversion.files]]
+filename = "build.gradle.kts"
+search = 'version = "{current_version}"'
+replace = 'version = "{new_version}"'

@@ -1,0 +1,4 @@
+.idea
+.gradle
+build/
+src/main/java/io/github/nanamochi/osu_native/bindings/

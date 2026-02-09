@@ -79,6 +79,8 @@ publishing {
             artifact(tasks["generateJavaJar"])
             artifact(tasks["generateJavaSourcesJar"])
             artifact(tasks["javadocJarJava"])
+
+            configurePom {}
         }
     }
     repositories {

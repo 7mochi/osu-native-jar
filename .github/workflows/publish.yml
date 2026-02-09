@@ -107,11 +107,12 @@ jobs:
             mkdir -p "build/generated/resources/native/$PLATFORM"
           
             for file in "$dir"/*; do
-              [ -e "$file" ] || continue
+              [ -f "$file" ] || continue
               FILENAME=$(basename "$file")
           
-              [[ "$FILENAME" == *.h || "$FILENAME" == *.dbg || "$FILENAME" == *.pdb || "$FILENAME" == *.dSYM ]] && continue
-              
+              [[ "$FILENAME" != *"osu.Native"* ]] && continue
+              [[ "$FILENAME" == *.h || "$FILENAME" == *.dbg || "$FILENAME" == *.pdb ]] && continue
+          
               if [[ "$FILENAME" == *.so || "$FILENAME" == *.dylib ]] && [[ ! "$FILENAME" == lib* ]]; then
                 cp "$file" "build/generated/resources/native/$PLATFORM/lib$FILENAME"
               else

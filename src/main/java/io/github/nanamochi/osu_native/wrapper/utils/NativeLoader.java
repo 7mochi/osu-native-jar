@@ -12,9 +12,22 @@ public class NativeLoader {
   public static synchronized void ensureLoaded() {
     if (loaded) return;
 
+    String os = System.getProperty("os.name").toLowerCase();
+    String arch = System.getProperty("os.arch").toLowerCase();
+    String platformDir;
+
+    if (os.contains("win")) {
+      platformDir = "windows-x86-64";
+    } else if (os.contains("mac")) {
+      platformDir = arch.contains("aarch64") ? "darwin-aarch64" : "darwin-x86-64";
+    } else {
+      platformDir = "linux-x86-64";
+    }
+
     String libName = System.mapLibraryName("osu.Native");
+    String resourcePath = "/" + platformDir + "/" + libName;
     try {
-      try (InputStream is = NativeLoader.class.getResourceAsStream("/" + libName)) {
+      try (InputStream is = NativeLoader.class.getResourceAsStream(resourcePath)) {
         if (is == null) {
           throw new IOException("Not found native library resource: " + libName);
         }

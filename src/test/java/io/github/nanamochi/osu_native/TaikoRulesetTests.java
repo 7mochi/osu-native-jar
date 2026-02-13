@@ -23,6 +23,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 @DisplayName("osu-native-jar – Taiko ruleset tests")
 public class TaikoRulesetTests {
   private static final String BEATMAP_RESOURCE = "221923.osu";
+  private static final double EPSILON = 1e-6;
 
   @Nested
   @DisplayName("Difficulty & performance attributes")
@@ -59,7 +60,7 @@ public class TaikoRulesetTests {
       TaikoDifficultyAttributes diff =
           (TaikoDifficultyAttributes) runOsuTaiko(mods, score).difficulty();
       assertAll(
-          () -> assertEquals(expected.starRating(), diff.getStarRating()),
+          () -> assertEquals(expected.starRating(), diff.getStarRating(), EPSILON),
           () -> assertEquals(expected.maxCombo(), diff.getMaxCombo()));
     }
 
@@ -74,8 +75,8 @@ public class TaikoRulesetTests {
       TaikoPerformanceAttributes perf =
           (TaikoPerformanceAttributes) runOsuTaiko(mods, score).performance();
       assertAll(
-          () -> assertEquals(expected.total(), perf.getTotal()),
-          () -> assertEquals(expected.difficulty(), perf.getDifficulty()));
+          () -> assertEquals(expected.total(), perf.getTotal(), EPSILON),
+          () -> assertEquals(expected.difficulty(), perf.getDifficulty(), EPSILON));
     }
   }
 

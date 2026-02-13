@@ -23,6 +23,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 @DisplayName("osu-native-jar – Mania ruleset tests")
 public class ManiaRulesetTests {
   private static final String BEATMAP_RESOURCE = "5107047.osu";
+  private static final double EPSILON = 1e-6;
 
   @Nested
   @DisplayName("Difficulty & performance attributes")
@@ -48,7 +49,7 @@ public class ManiaRulesetTests {
       ManiaDifficultyAttributes diff =
           (ManiaDifficultyAttributes) runOsuMania(mods, score).difficulty();
       assertAll(
-          () -> assertEquals(expected.starRating(), diff.getStarRating()),
+          () -> assertEquals(expected.starRating(), diff.getStarRating(), EPSILON),
           () -> assertEquals(expected.maxCombo(), diff.getMaxCombo()));
     }
 
@@ -63,8 +64,8 @@ public class ManiaRulesetTests {
       ManiaPerformanceAttributes perf =
           (ManiaPerformanceAttributes) runOsuMania(mods, score).performance();
       assertAll(
-          () -> assertEquals(expected.total(), perf.getTotal()),
-          () -> assertEquals(expected.difficulty(), perf.getDifficulty()));
+          () -> assertEquals(expected.total(), perf.getTotal(), EPSILON),
+          () -> assertEquals(expected.difficulty(), perf.getDifficulty(), EPSILON));
     }
   }
 

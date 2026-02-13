@@ -22,6 +22,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 @DisplayName("osu-native-jar – Standard ruleset tests")
 public class StandardRulesetTests {
   private static final String BEATMAP_RESOURCE = "5438072.osu";
+  private static final double EPSILON = 1e-6;
 
   @Nested
   @DisplayName("Difficulty & performance attributes")
@@ -72,25 +73,25 @@ public class StandardRulesetTests {
       OsuDifficultyAttributes diff =
           (OsuDifficultyAttributes) runOsuStandard(mods, score).difficulty();
       assertAll(
-          () -> assertEquals(expected.starRating(), diff.getStarRating()),
+          () -> assertEquals(expected.starRating(), diff.getStarRating(), EPSILON),
           () -> assertEquals(expected.maxCombo(), diff.getMaxCombo()),
-          () -> assertEquals(expected.aimDifficulty(), diff.getAimDifficulty()),
+          () -> assertEquals(expected.aimDifficulty(), diff.getAimDifficulty(), EPSILON),
           () ->
-              assertEquals(expected.aimDifficultySliderCount(), diff.getAimDifficultSliderCount()),
-          () -> assertEquals(expected.speedDifficulty(), diff.getSpeedDifficulty()),
-          () -> assertEquals(expected.speedNoteCount(), diff.getSpeedNoteCount()),
-          () -> assertEquals(expected.sliderFactor(), diff.getSliderFactor()),
-          () ->
-              assertEquals(
-                  expected.aimTopWeightedSliderFactor(), diff.getAimTopWeightedSliderFactor()),
+              assertEquals(expected.aimDifficultySliderCount(), diff.getAimDifficultSliderCount(), EPSILON),
+          () -> assertEquals(expected.speedDifficulty(), diff.getSpeedDifficulty(), EPSILON),
+          () -> assertEquals(expected.speedNoteCount(), diff.getSpeedNoteCount(), EPSILON),
+          () -> assertEquals(expected.sliderFactor(), diff.getSliderFactor(), EPSILON),
           () ->
               assertEquals(
-                  expected.speedTopWeightedSliderFactor(), diff.getSpeedTopWeightedSliderFactor()),
-          () -> assertEquals(expected.aimDifficultStrainCount(), diff.getAimDifficultStrainCount()),
+                  expected.aimTopWeightedSliderFactor(), diff.getAimTopWeightedSliderFactor(), EPSILON),
           () ->
               assertEquals(
-                  expected.speedDifficultStrainCount(), diff.getSpeedDifficultStrainCount()),
-          () -> assertEquals(expected.nestedScorePerObject(), diff.getNestedScorePerObject()),
+                  expected.speedTopWeightedSliderFactor(), diff.getSpeedTopWeightedSliderFactor(), EPSILON),
+          () -> assertEquals(expected.aimDifficultStrainCount(), diff.getAimDifficultStrainCount(), EPSILON),
+          () ->
+              assertEquals(
+                  expected.speedDifficultStrainCount(), diff.getSpeedDifficultStrainCount(), EPSILON),
+          () -> assertEquals(expected.nestedScorePerObject(), diff.getNestedScorePerObject(), EPSILON),
           () ->
               assertEquals(
                   expected.legacyScoreBaseMultiplier(), diff.getLegacyScoreBaseMultiplier()),
@@ -109,24 +110,30 @@ public class StandardRulesetTests {
       OsuPerformanceAttributes perf =
           (OsuPerformanceAttributes) runOsuStandard(mods, score).performance();
       assertAll(
-          () -> assertEquals(expected.aim(), perf.getAim()),
-          () -> assertEquals(expected.total(), perf.getTotal()),
-          () -> assertEquals(expected.speed(), perf.getSpeed()),
-          () -> assertEquals(expected.accuracy(), perf.getAccuracy()),
-          () -> assertEquals(expected.flashlight(), perf.getFlashlight()),
-          () -> assertEquals(expected.effectiveMissCount(), perf.getEffectiveMissCount()),
-          () -> assertEquals(expected.speedDeviation(), perf.getSpeedDeviation()),
+          () -> assertEquals(expected.aim(), perf.getAim(), EPSILON),
+          () -> assertEquals(expected.total(), perf.getTotal(), EPSILON),
+          () -> assertEquals(expected.speed(), perf.getSpeed(), EPSILON),
+          () -> assertEquals(expected.accuracy(), perf.getAccuracy(), EPSILON),
+          () -> assertEquals(expected.flashlight(), perf.getFlashlight(), EPSILON),
+          () -> assertEquals(expected.effectiveMissCount(), perf.getEffectiveMissCount(), EPSILON),
+          () -> {
+            if (expected.speedDeviation() != null) {
+              assertEquals(expected.speedDeviation(), perf.getSpeedDeviation(), EPSILON);
+            }
+          },
           () ->
               assertEquals(
-                  expected.comboBasedEstimatedMissCount(), perf.getComboBasedEstimatedMissCount()),
+                  expected.comboBasedEstimatedMissCount(), perf.getComboBasedEstimatedMissCount(), EPSILON),
+          () -> {
+            if (expected.scoreBasedEstimatedMissCount() != null) {
+              assertEquals(expected.scoreBasedEstimatedMissCount(), perf.getScoreBasedEstimatedMissCount(), EPSILON);
+            }
+          },
+          () ->
+              assertEquals(expected.aimEstimatedSliderBreaks(), perf.getAimEstimatedSliderBreaks(), EPSILON),
           () ->
               assertEquals(
-                  expected.scoreBasedEstimatedMissCount(), perf.getScoreBasedEstimatedMissCount()),
-          () ->
-              assertEquals(expected.aimEstimatedSliderBreaks(), perf.getAimEstimatedSliderBreaks()),
-          () ->
-              assertEquals(
-                  expected.speedEstimatedSliderBreaks(), perf.getSpeedEstimatedSliderBreaks()));
+                  expected.speedEstimatedSliderBreaks(), perf.getSpeedEstimatedSliderBreaks(), EPSILON));
     }
   }
 

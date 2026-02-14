@@ -167,7 +167,7 @@ jobs:
           pattern: '*'
           path: build/artifacts
 
-      - name: Prepare Env for Tests
+      - name: Prepare env for tests
         shell: bash
         run: |
           mkdir -p build/libs build/generated/resources/native
@@ -210,17 +210,11 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Download Compiled JAR
+      - name: Download compiled JAR
         uses: actions/download-artifact@v4
         with:
           name: osu-native-jar
           path: prebuilt-jar/
-
-      - name: Verify downloaded JAR
-        run: |
-          echo "Contents of prebuilt-jar:"
-          find prebuilt-jar -type f
-          echo "---"
 
       - name: Publish Maven Artifact
         env:

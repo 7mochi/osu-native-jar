@@ -84,16 +84,6 @@ tasks {
         if (isPublishingMode) {
             doFirst {
                 val prebuiltDir = project.file("prebuilt-jar")
-                println("Looking for prebuilt JAR in: ${prebuiltDir.absolutePath}")
-                println("Directory exists: ${prebuiltDir.exists()}")
-
-                if (prebuiltDir.exists()) {
-                    val files = prebuiltDir.listFiles()
-                    println("Files in directory: ${files?.size ?: 0}")
-                    files?.forEach {
-                        println("  - ${it.name} (size: ${it.length()})")
-                    }
-                }
 
                 val jarFiles = prebuiltDir.listFiles { file ->
                     file.name.endsWith(".jar") &&
@@ -107,7 +97,6 @@ tasks {
                     throw GradleException("Prebuilt JAR not found in prebuilt-jar/")
                 }
 
-                println("Using prebuilt JAR: ${prebuiltJar.name}")
                 from(zipTree(prebuiltJar))
             }
         } else {

@@ -125,7 +125,7 @@ jobs:
           cp "$HEADER_PATH" ./cabinet.h
           
           python3 scripts/fix_cabinet_header.py ./cabinet.h
-          jextract -t io.github.nanamochi.osu_native.bindings --output src/main/java --use-system-load-library ./cabinet.h
+          jextract -t io.github.nanamochi.osu_native.bindings --output src/main/java ./cabinet.h
           
           find src/main/java/io/github/nanamochi/osu_native/bindings -name "*.java" -exec sed -i 's/ValueLayout.JAVA_LONG/io.github.nanamochi.osu_native.bindings.cabinet_h.C_LONG/g' {} +
           sed -i 's|public static final ValueLayout.OfLong C_LONG = .*|public static final java.lang.foreign.ValueLayout.OfLong C_LONG = java.lang.foreign.ValueLayout.JAVA_LONG;|' src/main/java/io/github/nanamochi/osu_native/bindings/cabinet_h\$shared.java

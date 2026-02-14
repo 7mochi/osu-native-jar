@@ -48,7 +48,6 @@ fix-cabinet-header:
 extract-java:
 	jextract -t io.github.nanamochi.osu_native.bindings \
 	--output src/main/java \
-	--use-system-load-library \
 	$(OUTPUT_DIR)/generated/cabinet.h
 
 copy-native-to-resources:

@@ -17,7 +17,8 @@ repositories {
     mavenCentral()
 }
 
-val isCiTest = System.getProperty("useDownloadedJar") == "true"
+val isTestingMode = System.getProperty("ci.testing") == "true"
+val isPublishingMode = System.getProperty("ci.publishing") == "true"
 
 dependencies {
     implementation("org.scijava:native-lib-loader:2.5.0")
@@ -29,12 +30,12 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter:6.0.2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher:6.0.2")
 
-    if (isCiTest) {
+    if (isTestingMode) {
         testImplementation(fileTree("build/libs").include("*.jar"))
     }
 }
 
-if (isCiTest) {
+if (isTestingMode) {
     tasks.named<JavaCompile>("compileJava") { enabled = false }
     tasks.named<ProcessResources>("processResources") { enabled = false }
 
@@ -79,8 +80,40 @@ tasks {
     val generateJavaJar by registering(Jar::class) {
         archiveBaseName.set("osu_native")
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        from(sourceSets["main"].output)
-        dependsOn(sourceSets["main"].classesTaskName)
+
+        if (isPublishingMode) {
+            doFirst {
+                val prebuiltDir = project.file("prebuilt-jar")
+                println("Looking for prebuilt JAR in: ${prebuiltDir.absolutePath}")
+                println("Directory exists: ${prebuiltDir.exists()}")
+
+                if (prebuiltDir.exists()) {
+                    val files = prebuiltDir.listFiles()
+                    println("Files in directory: ${files?.size ?: 0}")
+                    files?.forEach {
+                        println("  - ${it.name} (size: ${it.length()})")
+                    }
+                }
+
+                val jarFiles = prebuiltDir.listFiles { file ->
+                    file.name.endsWith(".jar") &&
+                            !file.name.endsWith("-sources.jar") &&
+                            !file.name.endsWith("-javadoc.jar")
+                }
+
+                val prebuiltJar = jarFiles?.firstOrNull()
+
+                if (prebuiltJar == null || !prebuiltJar.exists()) {
+                    throw GradleException("Prebuilt JAR not found in prebuilt-jar/")
+                }
+
+                println("Using prebuilt JAR: ${prebuiltJar.name}")
+                from(zipTree(prebuiltJar))
+            }
+        } else {
+            from(sourceSets["main"].output)
+            dependsOn(sourceSets["main"].classesTaskName)
+        }
     }
 
     val generateJavaSourcesJar by registering(Jar::class) {

@@ -178,12 +178,12 @@ jobs:
             cp "$dir"/* "build/generated/resources/native/$PLATFORM/" 2>/dev/null || true
           done
 
-      - name: Run tests with Patched JAR
+      - name: Run tests with downloaded JAR
         shell: bash
         run: |
           rm -rf build/classes/java/main
           mv src/main/java src/main/java_bak
-          ./gradlew test -DuseDownloadedJar=true --no-daemon
+          ./gradlew test -Dci.testing=true --no-daemon
           mv src/main/java_bak src/main/java
 
       - name: Upload test results
@@ -214,7 +214,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: osu-native-jar
-          path: build/libs/
+          path: prebuilt-jar/
+
+      - name: Verify downloaded JAR
+        run: |
+          echo "Contents of prebuilt-jar:"
+          find prebuilt-jar -type f
+          echo "---"
 
       - name: Publish Maven Artifact
         env:
@@ -222,4 +228,4 @@ jobs:
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
           GPG_SIGNING_PASSPHRASE: ${{ secrets.GPG_SIGNING_PASSPHRASE }}
-        run: ./gradlew publishMavenJavaPublicationToCentralPortal -DuseDownloadedJar=true
+        run: ./gradlew publishMavenJavaPublicationToCentralPortal -Dci.publishing=true

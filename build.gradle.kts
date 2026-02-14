@@ -17,6 +17,8 @@ repositories {
     mavenCentral()
 }
 
+val isCiTest = System.getProperty("useDownloadedJar") == "true"
+
 dependencies {
     implementation("org.scijava:native-lib-loader:2.5.0")
     compileOnly("org.projectlombok:lombok:1.18.42")
@@ -26,11 +28,37 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok:1.18.42")
     testImplementation("org.junit.jupiter:junit-jupiter:6.0.2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher:6.0.2")
+
+    if (isCiTest) {
+        testImplementation(fileTree("build/libs").include("*.jar"))
+    }
+}
+
+if (isCiTest) {
+    tasks.named<JavaCompile>("compileJava") { enabled = false }
+    tasks.named<ProcessResources>("processResources") { enabled = false }
+
+    sourceSets.test {
+        compileClasspath = compileClasspath.filter { !it.absolutePath.contains("build/classes/java/main") }
+        runtimeClasspath = runtimeClasspath.filter { !it.absolutePath.contains("build/classes/java/main") }
+    }
+
+    tasks.named<JavaCompile>("compileTestJava") {
+        val jarFiles = fileTree("build/libs").matching { include("*.jar") }
+        classpath = classpath.plus(files(jarFiles))
+    }
+}
+
+tasks.register("copyDownloadedJar") {
+    doLast {
+        mkdir("build/libs")
+    }
 }
 
 tasks.named<Test>("test") {
     useJUnitPlatform()
     maxHeapSize = "1G"
+    jvmArgs("--enable-native-access=ALL-UNNAMED")
     testLogging {
         events("passed", "failed")
     }

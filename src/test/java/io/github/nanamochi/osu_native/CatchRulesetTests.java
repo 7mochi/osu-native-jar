@@ -13,7 +13,6 @@ import io.github.nanamochi.osu_native.wrapper.factories.PerformanceCalculatorFac
 import io.github.nanamochi.osu_native.wrapper.objects.*;
 import java.util.List;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.TestInstance;
@@ -21,8 +20,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-@Disabled // TODO: Disabled for now because there is a bug on the osu-native side that causes
-// incorrect pp calculation
 @DisplayName("osu-native-jar – Catch ruleset tests")
 public class CatchRulesetTests {
   private static final String BEATMAP_RESOURCE = "4289411.osu";
@@ -37,7 +34,7 @@ public class CatchRulesetTests {
               List.of(),
               fullComboScore(),
               new ExpectedDifficulty(8.023384332389398, 1909),
-              new ExpectedPerformance(853)));
+              new ExpectedPerformance(852.7183421110947)));
     }
 
     @ParameterizedTest(name = "Difficulty attributes for mods = {0}")
@@ -95,12 +92,11 @@ public class CatchRulesetTests {
 
   private static ScoreInfo fullComboScore() {
     ScoreInfo score = new ScoreInfo();
-    // TODO: setters for catch calculation are missing in osu-native
-    // score.setAccuracy(1.0);
-    // score.setMaxCombo(1909);
-    // score.setCountGreat(1836);
-    // score.setCountOk(73);
-    // score.setCountMeh(86);
+    score.setAccuracy(1.0);
+    score.setMaxCombo(1909);
+    score.setCountGreat(1836);
+    score.setCountLargeTickHit(73);
+    score.setCountSmallTickHit(86);
     return score;
   }
 }

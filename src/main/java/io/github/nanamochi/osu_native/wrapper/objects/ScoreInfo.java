@@ -30,8 +30,11 @@ public class ScoreInfo {
   private int countGood;
   private int countGreat;
   private int countPerfect;
-  private int countSliderTailHit;
+  private int countSmallTickMiss;
+  private int countSmallTickHit;
   private int countLargeTickMiss;
+  private int countLargeTickHit;
+  private int countSliderTailHit;
   private Long legacyTotalScore;
 
   public MemorySegment convertToNative(Arena arena) {
@@ -60,8 +63,11 @@ public class ScoreInfo {
     NativeScoreInfo.countGood(nativeScore, countGood);
     NativeScoreInfo.countGreat(nativeScore, countGreat);
     NativeScoreInfo.countPerfect(nativeScore, countPerfect);
-    NativeScoreInfo.countSliderTailHit(nativeScore, countSliderTailHit);
+    NativeScoreInfo.countSmallTickMiss(nativeScore, countSmallTickMiss);
+    NativeScoreInfo.countSmallTickHit(nativeScore, countSmallTickHit);
     NativeScoreInfo.countLargeTickMiss(nativeScore, countLargeTickMiss);
+    NativeScoreInfo.countLargeTickHit(nativeScore, countLargeTickHit);
+    NativeScoreInfo.countSliderTailHit(nativeScore, countSliderTailHit);
 
     return nativeScore;
   }

@@ -1,6 +1,7 @@
 package io.github.nanamochi.osu_native.wrapper.objects;
 
 import static io.github.nanamochi.osu_native.bindings.cabinet_h.Beatmap_CreateFromFile;
+import static io.github.nanamochi.osu_native.bindings.cabinet_h.Beatmap_CreateFromText;
 import static io.github.nanamochi.osu_native.bindings.cabinet_h.Beatmap_Destroy;
 
 import io.github.nanamochi.osu_native.bindings.NativeBeatmap;
@@ -9,6 +10,8 @@ import io.github.nanamochi.osu_native.wrapper.utils.NativeHelper;
 import io.github.nanamochi.osu_native.wrapper.utils.NativeLoader;
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
+import java.nio.charset.StandardCharsets;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -33,6 +36,21 @@ public class Beatmap implements AutoCloseable {
       arena.close();
       throw new RuntimeException(
           "Failed to create beatmap from file. Error: " + ErrorCode.fromValue(result));
+    }
+
+    return new Beatmap(nativeBeatmap, arena);
+  }
+
+  public static Beatmap fromBytes(byte[] data) {
+    Arena arena = Arena.ofConfined();
+
+    MemorySegment nativeString = arena.allocateFrom(new String(data, StandardCharsets.UTF_8));
+    MemorySegment nativeBeatmap = arena.allocate(NativeBeatmap.layout());
+    int result = Beatmap_CreateFromText(nativeString, nativeBeatmap);
+    if (ErrorCode.fromValue(result) != ErrorCode.SUCCESS) {
+      arena.close();
+      throw new RuntimeException(
+              "Failed to create beatmap from bytes. Error: " + ErrorCode.fromValue(result));
     }
 
     return new Beatmap(nativeBeatmap, arena);

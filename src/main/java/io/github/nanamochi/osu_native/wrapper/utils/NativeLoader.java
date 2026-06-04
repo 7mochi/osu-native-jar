@@ -9,6 +9,10 @@ import java.nio.file.StandardCopyOption;
 public class NativeLoader {
   private static boolean loaded = false;
 
+  private static boolean isArm64(String arch) {
+    return arch.contains("aarch64") || arch.contains("arm64");
+  }
+
   public static synchronized void ensureLoaded() {
     if (loaded) return;
 
@@ -19,7 +23,9 @@ public class NativeLoader {
     if (os.contains("win")) {
       platformDir = "windows-x86-64";
     } else if (os.contains("mac")) {
-      platformDir = arch.contains("aarch64") ? "darwin-aarch64" : "darwin-x86-64";
+      platformDir = isArm64(arch) ? "darwin-aarch64" : "darwin-x86-64";
+    } else if (os.contains("linux")) {
+      platformDir = isArm64(arch) ? "linux-aarch64" : "linux-x86-64";
     } else {
       platformDir = "linux-x86-64";
     }
@@ -29,7 +35,7 @@ public class NativeLoader {
     try {
       try (InputStream is = NativeLoader.class.getResourceAsStream(resourcePath)) {
         if (is == null) {
-          throw new IOException("Not found native library resource: " + libName);
+          throw new IOException("Not found native library resource: " + resourcePath);
         }
         Path tempLib = Files.createTempFile("osu_native_", "_" + libName);
         tempLib.toFile().deleteOnExit();

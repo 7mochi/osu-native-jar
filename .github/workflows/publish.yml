@@ -34,6 +34,10 @@ jobs:
             target: 'linux-x64'
             output: 'osu.Native.so'
             lib_dir: 'linux-x86-64'
+          - host: ubuntu-latest
+            target: 'linux-arm64'
+            output: 'osu.Native.so'
+            lib_dir: 'linux-aarch64'
 
     steps:
       - uses: actions/checkout@v6.0.2

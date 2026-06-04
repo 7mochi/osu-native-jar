@@ -34,7 +34,7 @@ jobs:
             target: 'linux-x64'
             output: 'osu.Native.so'
             lib_dir: 'linux-x86-64'
-          - host: ubuntu-latest
+          - host: ubuntu-24.04-arm
             target: 'linux-arm64'
             output: 'osu.Native.so'
             lib_dir: 'linux-aarch64'

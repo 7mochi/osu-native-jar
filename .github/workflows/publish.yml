@@ -54,17 +54,6 @@ jobs:
         run: |
           dotnet publish osu-native/osu.Native -c Release -r ${{ matrix.settings.target }} -o ./publish_out
 
-      - name: Include header in artifact
-        shell: bash
-        run: |
-          HEADER_SRC=$(find osu-native/Artifacts/bin -name "cabinet.h" | grep "${{ matrix.settings.target }}" | head -n 1)
-          if [ -f "$HEADER_SRC" ]; then
-            cp "$HEADER_SRC" ./publish_out/cabinet.h
-          else
-            echo "Warning: cabinet.h not found in Artifacts, searching everywhere..."
-            find . -name "cabinet.h" -exec cp {} ./publish_out/ \;
-          fi
-
       - name: Upload artifact
         uses: actions/upload-artifact@v6
         with:
